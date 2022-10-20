@@ -12,8 +12,9 @@ export default defineConfig({
         build: {
           lib: {
             entry: path.resolve(__dirname, "src/index.ts"),
-            name: "3dp",
-            formats: ["cjs", "es", "umd"],
+            name: "tridp",
+            fileName: "tridp",
+            formats: ["cjs", "es", "umd", 'iife'],
           },
           minify: true,
         },

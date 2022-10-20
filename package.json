@@ -1,17 +1,17 @@
 {
   "name": "3dp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "./dist/3dp.umd.cjs",
-  "module": "./dist/3dp.js",
+  "main": "./dist/tridp.umd.cjs",
+  "module": "./dist/tridp.js",
   "exports": {
     ".": {
-      "import": "./dist/3dp.js",
-      "require": "./dist/3dp.umd.cjs"
+      "import": "./dist/tridp.js",
+      "require": "./dist/tridp.umd.cjs"
     }
   },
   "typings": "./dist/index.d.ts",

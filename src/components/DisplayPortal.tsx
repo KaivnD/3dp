@@ -11,6 +11,7 @@ import {
 } from "react";
 import { Scene } from "three";
 import { MeshBufferGeometry } from "./MeshBufferGeometry";
+import { useAppSelector } from "../store";
 
 interface ThreeReference {
   scene: Scene;
@@ -34,11 +35,11 @@ const ThreeReference = forwardRef<ThreeReference>(({}, ref) => {
 export interface DisplayPortalInstance {
   scene?: Scene;
   clear(): void;
+  addMeshes(buffer: MeshBuffer[]): void;
+  addWires(buffer: WireBuffer[]): void;
 }
 
 interface DisplayPortalProps {
-  wirebuffers: WireBuffer[];
-  meshbuffers: MeshBuffer[];
   option?: DisplayPortalOption;
   onMounted?(): void;
 }
@@ -46,25 +47,18 @@ interface DisplayPortalProps {
 export const DisplayPortal = forwardRef<
   DisplayPortalInstance,
   DisplayPortalProps
->(({ onMounted, meshbuffers, wirebuffers, option }, ref) => {
+>(({ onMounted, option }, ref) => {
   const threeRef = useRef<ThreeReference>(null);
-
-  useImperativeHandle(
-    ref,
-    () => ({
-      scene: threeRef.current?.scene,
-      clear() {},
-    }),
-    []
-  );
+  const meshes = useAppSelector((state) => state.app.meshbuffers);
+  const wires = useAppSelector((state) => state.app.wirebuffers);
 
   useEffect(() => {
     onMounted && onMounted();
   }, []);
 
-  const wires = useMemo(() => {
+  const __wires = useMemo(() => {
     const res: Wire[] = [];
-    for (let { data, options } of wirebuffers) {
+    for (let { data, options } of wires) {
       const arr: Vec3Array = [];
       for (let i = 0; i < data.length; i += 3) {
         const x = data[i];
@@ -76,7 +70,7 @@ export const DisplayPortal = forwardRef<
       res.push({ data: arr, options });
     }
     return res;
-  }, [wirebuffers]);
+  }, [wires]);
 
   return (
     <Canvas
@@ -107,10 +101,10 @@ export const DisplayPortal = forwardRef<
         <shadowMaterial attach="material" transparent opacity={0.4} />
       </mesh>
       <GridHelper />
-      {meshbuffers.map((buffer, i) => (
+      {meshes.map((buffer, i) => (
         <MeshBufferGeometry key={i} data={buffer} option={option?.buffers} />
       ))}
-      {wires.map(({ data, options }, i) => (
+      {__wires.map(({ data, options }, i) => (
         <Line
           key={i}
           points={data}
